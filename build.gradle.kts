@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "gg.generations"
-version = "2.11.17"
+version = "2.11.18"
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 
@@ -59,6 +59,7 @@ dependencies {
     "shadowTools"(implementation("org.lwjgl", "lwjgl-stb"))
     "shadow"(implementation("org.lwjgl", "lwjgl-assimp", "3.3.2")) //Only now just to keep assimp native from complaining
     "shadow"(implementation("com.github.thecodewarrior", "BinarySMD", "-SNAPSHOT"))
+    "shadow"(implementation("org.msgpack", "msgpack-core", "0.8.17"))
     "shadowTools"(implementation(fileTree(mapOf("dir" to "libs", "include" to "*.jar")))!!)
     "shadow"(implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")!!)
     "shadow"(implementation("io.github.mudbill:dds-lwjgl:3.0.0")!!)

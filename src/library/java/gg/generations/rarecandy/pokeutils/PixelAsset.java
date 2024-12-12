@@ -145,39 +145,33 @@ public class PixelAsset {
 
                 return new MeshOptions(invert, aliases);
             }))
-            .registerTypeAdapter(SkeletalTransform.class, new GenericJsonThing<SkeletalTransform>(new BiFunction<SkeletalTransform, JsonSerializationContext, JsonElement>() {
-                @Override
-                public JsonElement apply(SkeletalTransform skeletalTransform, JsonSerializationContext jsonSerializationContext) {
-                    var obj = new JsonObject();
-                    var position = skeletalTransform.position();
-                    if (position.x != 0 || position.y != 0 || position.z != 0) {
-                        obj.add("position", jsonSerializationContext.serialize(position));
-                    }
-                    var rotation = skeletalTransform.rotation();
-                    if (rotation.x != 0 || rotation.y != 0 || rotation.z != 0 || rotation.w != 0) {
-                        obj.add("rotation", jsonSerializationContext.serialize(rotation));
-                    }
-                    return obj;
+            .registerTypeAdapter(SkeletalTransform.class, new GenericJsonThing<>((skeletalTransform, jsonSerializationContext) -> {
+                var obj = new JsonObject();
+                var position = skeletalTransform.position();
+                if (position.x != 0 || position.y != 0 || position.z != 0) {
+                    obj.add("position", jsonSerializationContext.serialize(position));
                 }
-            }, new BiFunction<JsonElement, JsonDeserializationContext, SkeletalTransform>() {
-                @Override
-                public SkeletalTransform apply(JsonElement element, JsonDeserializationContext context) {
-                    var obj = element.getAsJsonObject();
-
-                    var position = new Vector3f();
-
-                    if(obj.has("position")) {
-                        position = context.deserialize(obj.get("position"), Vector3f.class);
-                    }
-
-                    var rotation = new Quaternionf();
-
-                    if(obj.has("rotation =")) {
-                        rotation = context.deserialize(obj.get("rotation"), Quaternionf.class);
-                    }
-
-                    return new SkeletalTransform(position, rotation);
+                var rotation = skeletalTransform.rotation();
+                if (rotation.x != 0 || rotation.y != 0 || rotation.z != 0 || rotation.w != 0) {
+                    obj.add("rotation", jsonSerializationContext.serialize(rotation));
                 }
+                return obj;
+            }, (element, context) -> {
+                var obj = element.getAsJsonObject();
+
+                var position = new Vector3f();
+
+                if (obj.has("position")) {
+                    position = context.deserialize(obj.get("position"), Vector3f.class);
+                }
+
+                var rotation = new Quaternionf();
+
+                if (obj.has("rotation")) {
+                    rotation = context.deserialize(obj.get("rotation"), Quaternionf.class);
+                }
+
+                return new SkeletalTransform(position, rotation);
             }))
             .create();
 
