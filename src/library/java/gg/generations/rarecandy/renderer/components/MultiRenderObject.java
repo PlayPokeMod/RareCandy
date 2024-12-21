@@ -34,7 +34,12 @@ public class MultiRenderObject<T extends RenderObject> extends RenderObject {
     }
 
     public void add(T obj) {
-        this.objects.add(obj);
+        add(obj, false);
+    }
+
+    public void add(T obj, boolean addInFront) {
+        if(addInFront) this.objects.add(0, obj);
+        else this.objects.add(obj);
         dirty = true;
     }
 

@@ -75,7 +75,7 @@ public class ModelLoader {
         var variants = processVariants(config, images);
 
         for (var mesh : meshes) {
-            processPrimitiveModels(renderModelSuppler, objects, supplier, mesh, variants, glCalls, skeleton, animations, config.hideDuringAnimation, config.modelOptions != null ? config.modelOptions : Collections.<String, MeshOptions>emptyMap());
+            processPrimitiveModels(renderModelSuppler, objects, supplier, mesh, variants, config.meshesToRenderFirst != null ? config.meshesToRenderFirst : Collections.emptyList(), glCalls, skeleton, animations, config.hideDuringAnimation, config.modelOptions != null ? config.modelOptions : Collections.<String, MeshOptions>emptyMap());
         }
 
         var transform = new Matrix4f();
@@ -269,7 +269,7 @@ public class ModelLoader {
         transform.set(node.transform);
     }
 
-    private static <T extends MeshObject> void processPrimitiveModels(RenderModel.Provider provider, MultiRenderObject<T> objects, Supplier<T> objSupplier, AIMesh mesh, Map<String, Map<String, Variant>> variants, List<Runnable> glCalls, @Nullable Skeleton skeleton, @Nullable Map<String, Animation> animations, Map<String, ModelConfig.HideDuringAnimation> hideDuringAnimations, Map<String, MeshOptions> meshOptions) {
+    private static <T extends MeshObject> void processPrimitiveModels(RenderModel.Provider provider, MultiRenderObject<T> objects, Supplier<T> objSupplier, AIMesh mesh, Map<String, Map<String, Variant>> variants, List<String> meshesToRenderFirst, List<Runnable> glCalls, @Nullable Skeleton skeleton, @Nullable Map<String, Animation> animations, Map<String, ModelConfig.HideDuringAnimation> hideDuringAnimations, Map<String, MeshOptions> meshOptions) {
         var name = mesh.mName().dataString();
 
         var renderObject = objSupplier.get();
@@ -283,7 +283,7 @@ public class ModelLoader {
             renderObject.setup(variant, glModel, name);
         }
 
-        objects.add(renderObject);
+        objects.add(renderObject, meshesToRenderFirst.contains(name));
     }
 
     private static RenderModel processPrimitiveModel(Skeleton skeleton, AIMesh mesh, Map<String, MeshOptions> options, List<Runnable> glCalls, Vector3f dimensions, RenderModel.Provider renderModelSupplier) {
