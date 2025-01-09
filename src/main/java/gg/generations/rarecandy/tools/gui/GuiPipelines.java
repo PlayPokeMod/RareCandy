@@ -151,6 +151,22 @@ public class GuiPipelines {
     public static final Pipeline SOLID = new Pipeline.Builder(BASE)
             .shader(builtin("animated/animated.vs.glsl"), builtin("animated/solid.fs.glsl"))
             .build();
+    public static final Pipeline CARTOON = new Pipeline.Builder(BASE)
+            .shader(builtin("animated/animated.vs.glsl"), builtin("process/cartoon.fs.glsl"))
+            .build();
+    public static final Pipeline PASTEL = new Pipeline.Builder(BASE)
+            .shader(builtin("animated/animated.vs.glsl"), builtin("process/pastel.fs.glsl"))
+            .build();
+    public static final Pipeline SHADOW = new Pipeline.Builder(BASE)
+            .shader(builtin("animated/animated.vs.glsl"), builtin("process/shadow.fs.glsl"))
+            .build();
+
+    public static final Pipeline VINTAGE = new Pipeline.Builder(BASE)
+            .shader(builtin("animated/animated.vs.glsl"), builtin("process/vintage.fs.glsl"))
+            .build();
+    public static final Pipeline SKETCH = new Pipeline.Builder(BASE)
+            .shader(builtin("animated/animated.vs.glsl"), builtin("process/sketch.fs.glsl"))
+            .build();
     public static final Pipeline MASKED = new Pipeline.Builder(BASE)
             .shader(builtin("animated/animated.vs.glsl"), builtin("animated/masked.fs.glsl"))
             .supplyUniform("diffuse", ctx -> {
@@ -181,6 +197,39 @@ public class GuiPipelines {
 
                 ctx.uniform().uploadInt(i);
             }).build();
+
+    public static final Pipeline.Builder GALAXY_BASE = new Pipeline.Builder(BASE)
+            .shader(builtin("animated/animated.vs.glsl"), builtin("animated/galaxy.fs.glsl"))
+            .configure(GuiPipelines::baseColors)
+            .configure(GuiPipelines::emissionColors)
+            .supplyUniform("frame", ctx -> {
+                var i = (int) pingpong((RareCandyCanvas.getTime()) % 1d); // Scale time
+                ctx.uniform().uploadInt(i);
+
+            }).supplyUniform("layer", ctx -> {
+                var texture = ctx.getTexture("layer");
+
+                if(texture == null) texture = ITextureLoader.instance().getDarkFallback();
+
+
+                texture.bind(2);
+                ctx.uniform().uploadInt(2);
+            }).supplyUniform("mask", ctx -> {
+                var texture = ctx.getTexture("mask");
+
+                if(texture == null) texture = ITextureLoader.instance().getDarkFallback();
+
+                texture.bind(3);
+                ctx.uniform().uploadInt(3);
+            });
+    public static final Pipeline GALAXY = new Pipeline.Builder(GALAXY_BASE)
+            .supplyUniform("frame", ctx -> {
+                double slowdownFactor = 2;
+                var i = (int) pingpong((RareCandyCanvas.getTime() / slowdownFactor) % 1d); // Scale time
+                ctx.uniform().uploadInt(i);
+
+            }).build();
+
 
     public static double fract(double a) {
         return a - floor(a);

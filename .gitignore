@@ -7,5 +7,7 @@
 *.iml
 gradlew
 *.log
+logs/
+temp/
 
 run/

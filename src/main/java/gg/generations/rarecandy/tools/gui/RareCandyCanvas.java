@@ -120,6 +120,12 @@ public class RareCandyCanvas extends AWTGLCanvas {
             case "masked" -> GuiPipelines.MASKED;
             case "layered" -> GuiPipelines.LAYERED;
             case "paradox" -> GuiPipelines.PARADOX;
+            case "galaxy" -> GuiPipelines.GALAXY;
+            case "cartoon" -> GuiPipelines.CARTOON;
+            case "pastel" -> GuiPipelines.PASTEL;
+            case "vintage" -> GuiPipelines.VINTAGE;
+            case "sketch" -> GuiPipelines.SKETCH;
+            case "shadow" -> GuiPipelines.SHADOW;
             case "plane" -> GuiPipelines.PLANE;
             case "screen" -> GuiPipelines.SCREEN_QUAD;
             default -> GuiPipelines.SOLID;

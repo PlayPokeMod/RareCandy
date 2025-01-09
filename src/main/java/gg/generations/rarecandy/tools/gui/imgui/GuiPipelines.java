@@ -58,6 +58,45 @@ public class GuiPipelines {
     public static final Pipeline LAYERED = new Pipeline.Builder(LAYERED_BASE)
             .supplyUniform("frame", ctx -> ctx.uniform().uploadInt(-1))
             .build();
+    public static final Pipeline VINTAGE = new Pipeline.Builder(BASE)
+            .shader(builtin("animated.vs.glsl"), builtin("vintage.fs.glsl"))
+            .build();
+    public static final Pipeline SKETCH = new Pipeline.Builder(BASE)
+            .shader(builtin("animated.vs.glsl"), builtin("sketch.fs.glsl"))
+            .build();
+    public static final Pipeline CARTOON = new Pipeline.Builder(BASE)
+            .shader(builtin("animated.vs.glsl"), builtin("cartoon.fs.glsl"))
+            .build();
+    public static final Pipeline PASTEL = new Pipeline.Builder(BASE)
+            .shader(builtin("animated.vs.glsl"), builtin("pastel.fs.glsl"))
+            .build();
+    public static final Pipeline SHADOW = new Pipeline.Builder(BASE)
+            .shader(builtin("animated.vs.glsl"), builtin("shadow.fs.glsl"))
+            .build();
+    public static final Pipeline.Builder GALAXY_BASE = new Pipeline.Builder(BASE)
+            .shader(builtin("animated.vs.glsl"), builtin("galaxy.fs.glsl"))
+            .configure(GuiPipelines::baseColors)
+            .configure(GuiPipelines::emissionColors)
+            .supplyUniform("layer", ctx -> {
+                var texture = ctx.getTexture("layer");
+
+                if(texture == null) texture = ITextureLoader.instance().getDarkFallback();
+
+
+                texture.bind(2);
+                ctx.uniform().uploadInt(2);
+            }).supplyUniform("mask", ctx -> {
+                var texture = ctx.getTexture("mask");
+
+                if(texture == null) texture = ITextureLoader.instance().getDarkFallback();
+
+                texture.bind(3);
+                ctx.uniform().uploadInt(3);
+            });
+    public static final Pipeline GALAXY = new Pipeline.Builder(GALAXY_BASE)
+            .supplyUniform("frame", ctx -> ctx.uniform().uploadInt(-1))
+            .build();
+
 
     public static final Pipeline SOLID = new Pipeline.Builder(BASE)
             .shader(builtin("animated.vs.glsl"), builtin("solid.fs.glsl"))
@@ -116,6 +155,12 @@ public class GuiPipelines {
             case "masked" -> GuiPipelines.MASKED;
             case "layered" -> GuiPipelines.LAYERED;
             case "paradox" -> GuiPipelines.LAYERED;
+            case "galaxy" -> GuiPipelines.GALAXY;
+            case "cartoon" -> GuiPipelines.CARTOON;
+            case "pastel" -> GuiPipelines.PASTEL;
+            case "shadow" -> GuiPipelines.SHADOW;
+            case "vintage" -> GuiPipelines.VINTAGE;
+            case "sketch" -> GuiPipelines.SKETCH;
             default -> GuiPipelines.SOLID;
         });
     }
