@@ -16,7 +16,6 @@ import java.nio.file.Path;
 import java.util.*;
 
 import static gg.generations.rarecandy.tools.gui.RareCandyCanvas.lightLevel;
-import static gg.generations.rarecandy.tools.gui.RareCandyCanvas.setup;
 
 public class GuiHandler implements KeyListener {
     public static final Path TEMP = Path.of("temp");
@@ -45,13 +44,13 @@ public class GuiHandler implements KeyListener {
         frame.pack();
         frame.transferFocus();
         arcBall = new ArcballOrbit(getCanvas(), 3f, 0.125f, 0f);
-        getCanvas().attachArcBall(arcBall);
-        getCanvas().addKeyListener(this);
-        setup(getCanvas());
+//        getCanvas().attachArcBall(arcBall);
+//        getCanvas().addKeyListener(this);
+//        setup(getCanvas());
     }
 
     public RareCandyCanvas getCanvas() {
-        return (RareCandyCanvas) gui.canvasPanel.getComponents()[0];
+        return gui.getRenderingWindow();
     }
 
     public void initializeAsset(PixelAsset asset, Path path) {

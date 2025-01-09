@@ -4,6 +4,7 @@ import com.bedrockk.molang.MoLang;
 import com.bedrockk.molang.runtime.value.DoubleValue;
 import com.github.weisj.darklaf.LafManager;
 import gg.generations.rarecandy.pokeutils.reader.ITextureLoader;
+import gg.generations.rarecandy.renderer.model.material.PipelineRegistry;
 import gg.generations.rarecandy.tools.TextureLoader;
 
 import javax.swing.*;
@@ -18,27 +19,45 @@ public class PokeUtilsGui extends JPanel {
 
     public GuiHandler handler;
     public JTree fileViewer;
-    public JPanel canvasPanel;
-    private RareCandyCanvas renderingWindow;
+//    public JPanel canvasPanel;
+    private final RareCandyCanvas renderingWindow;
     public FloatInputComponent scale;
 
     public PokeUtilsGui() {
         ITextureLoader.setInstance(new TextureLoader());
-        LafManager.install(LafManager.themeForPreferredStyle(LafManager.getPreferredThemeStyle()));
+
+        PipelineRegistry.setFunction(s-> switch(s) {
+            case "masked" -> GuiPipelines.MASKED;
+            case "layered" -> GuiPipelines.LAYERED;
+            case "paradox" -> GuiPipelines.PARADOX;
+            case "plane" -> GuiPipelines.PLANE;
+            case "screen" -> GuiPipelines.SCREEN_QUAD;
+            default -> GuiPipelines.SOLID;
+        });
+
+//        LafManager.install(LafManager.themeForPreferredStyle(LafManager.getPreferredThemeStyle()));
+
+        renderingWindow = new RareCandyCanvas(this);
+
         initComponents();
-        canvasPanel.add(renderingWindow);
+
         fileViewer.setFocusable(true);
-        canvasPanel.setFocusable(true);
 
-        var renderLoop = new Runnable() {
-            @Override
-            public void run() {
-                if (renderingWindow.isValid()) renderingWindow.render();
-                SwingUtilities.invokeLater(this);
-            }
-        };
+        renderingWindow.run();
 
-        SwingUtilities.invokeLater(renderLoop);
+//        var renderLoop = new Runnable() {
+//            @Override
+//            public void run() {
+//                if (renderingWindow.isValid()) renderingWindow.render();
+//                SwingUtilities.invokeLater(this);
+//            }
+//        };
+//
+//        SwingUtilities.invokeLater(renderLoop);
+    }
+
+    public RareCandyCanvas getRenderingWindow() {
+        return renderingWindow;
     }
 
     public static void main(String[] args) {
@@ -48,7 +67,9 @@ public class PokeUtilsGui extends JPanel {
 //            System.out.println("Renderdoc not loaded. Continuing without.");
 //        }
         var frame = new JFrame();
-        var gui = new PokeUtilsGui();
+
+        PokeUtilsGui gui = new PokeUtilsGui();
+
         frame.setSize(new Dimension(250+512 + (512 - 482), 512));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setContentPane(gui);
@@ -59,13 +80,13 @@ public class PokeUtilsGui extends JPanel {
         this.handler = handler;
         addKeyListener(handler);
         fileViewer.addKeyListener(handler);
-        canvasPanel.addKeyListener(handler);
+//        canvasPanel.addKeyListener(handler);
     }
 
     private void createUIComponents() {
 //        System.load("C:/Program Files/RenderDoc/renderdoc.dll");
         this.fileViewer = new PixelAssetTree(this);
-        this.renderingWindow = new RareCandyCanvas(this);
+//        this.renderingWindow = new RareCandyCanvas(this);
     }
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 
@@ -91,7 +112,7 @@ public class PokeUtilsGui extends JPanel {
         var splitPane1 = new JSplitPane();
         // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
         JScrollPane scrollPane1 = new JScrollPane();
-        canvasPanel = new JPanel();
+//        canvasPanel = new JPanel();
 
         //======== this ========
         setMinimumSize(null);
@@ -133,13 +154,13 @@ public class PokeUtilsGui extends JPanel {
                 splitPane1.setLeftComponent(panel);
             }
 
-            //======== canvasPanel ========
-            {
-                canvasPanel.setMaximumSize(new Dimension(1920, 1080));
-                canvasPanel.setPreferredSize(null);
-                canvasPanel.setLayout(new BorderLayout());
-            }
-            splitPane1.setRightComponent(canvasPanel);
+//            //======== canvasPanel ========
+//            {
+//                canvasPanel.setMaximumSize(new Dimension(1920, 1080));
+//                canvasPanel.setPreferredSize(null);
+//                canvasPanel.setLayout(new BorderLayout());
+//            }
+//            splitPane1.setRightComponent(canvasPanel);
         }
         add(splitPane1, BorderLayout.CENTER);
         // JFormDesigner - End of component initialization  //GEN-END:initComponents  @formatter:on

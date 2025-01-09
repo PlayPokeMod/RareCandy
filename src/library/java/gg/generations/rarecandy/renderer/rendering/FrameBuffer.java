@@ -1,5 +1,6 @@
 package gg.generations.rarecandy.renderer.rendering;
 
+import com.spinyowl.legui.image.Image;
 import gg.generations.rarecandy.renderer.loading.ITexture;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -14,7 +15,7 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class FrameBuffer implements ITexture {
+public class FrameBuffer extends Image implements ITexture {
     private final int framebufferId;
     private final int textureId;
     private final int rbo;
@@ -22,6 +23,8 @@ public class FrameBuffer implements ITexture {
     private final int height;
 
     public FrameBuffer(int width, int height) {
+        super();
+
         this.width = width;
         this.height = height;
         framebufferId = GL30.glGenFramebuffers();
@@ -65,6 +68,14 @@ public class FrameBuffer implements ITexture {
     @Override
     public int width() {
         return width;
+    }
+
+    public int getWidth() {
+        return width();
+    }
+
+    public int getHeight() {
+        return height();
     }
 
     public int height() {
@@ -206,5 +217,9 @@ public class FrameBuffer implements ITexture {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public int getTextureId() {
+        return textureId;
     }
 }

@@ -1,6 +1,12 @@
 package gg.generations.rarecandy.renderer.loading;
 
+import com.traneptora.jxlatte.JXLDecoder;
+import com.traneptora.jxlatte.JXLImage;
+import com.traneptora.jxlatte.JXLatte;
+import com.traneptora.jxlatte.color.ColorFlags;
+import com.traneptora.jxlatte.util.ImageBuffer;
 import io.github.mudbill.dds.DDSFile;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL13C;
@@ -64,6 +70,8 @@ public class Texture implements ITexture {
             var dds = new DDSFile(new ByteArrayInputStream(imageBytes));
 
             return new Texture(new DDSTextureDetails(dds));
+        } else if(name.endsWith(".jxl")) {
+            return new Texture(readJXL(imageBytes));
         } else return new Texture(read(imageBytes));
     }
 
@@ -99,6 +107,84 @@ public class Texture implements ITexture {
 
 
         return new TextureDetailsSTB(image, comp == 3 ? Type.RGB_BYTE : Type.RGBA_BYTE, w, h);
+    }
+
+    private static TextureDetails readJXL(byte[] bytes) throws IOException {
+        // Decode the JPEG XL image
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
+        JXLImage jxlImage = new JXLDecoder(inputStream).decode();
+
+        if (jxlImage == null) {
+            throw new IOException("Failed to decode JPEG XL image.");
+        }
+
+        // Validate 8-bit support (common for typical GL texture usage)
+        int bitDepth = jxlImage.getHeader().getBitDepthHeader().bitsPerSample;
+        if (bitDepth != 8) {
+            throw new IOException("Unsupported bit depth: " + bitDepth + ". Only 8-bit is supported.");
+        }
+
+        // Retrieve relevant metadata
+        int width      = jxlImage.getWidth();
+        int height     = jxlImage.getHeight();
+        boolean hasAlpha = jxlImage.hasAlpha();
+
+        // Decide how many channels to pull from the image buffers
+        // For colorEncoding == CE_GRAY -> 1 channel (plus alpha if present)
+        // For colorEncoding == CE_RGB  -> 3 channels (plus alpha if present)
+        int colorChannels = jxlImage.getColorChannelCount();  // 1 (gray) or 3 (rgb)
+        if (hasAlpha) {
+            colorChannels++; // add one for alpha
+        }
+
+        // Prepare a ByteBuffer for the raw pixel data
+        ByteBuffer pixelData = MemoryUtil.memAlloc(width * height * colorChannels);
+
+        // We'll gather channel indices to read in the correct order (R, G, B, then alpha)
+        // If it's grayscale, that means channel=0 for Gray, and if alpha exists, alphaIndex
+        // If it's RGB, channels=0,1,2, then alphaIndex if present
+        ImageBuffer[] buffers = jxlImage.getBuffer(false);
+        int[] channelIndices = getInts(jxlImage, hasAlpha);
+
+        // Write raw pixel data (8-bit) into the ByteBuffer
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                for (int index : channelIndices) {
+                    // Get the integer sample; JXL is guaranteed 8-bit in this context
+                    int sample = buffers[index].getIntBuffer()[y][x];
+                    pixelData.put((byte) sample);
+                }
+            }
+        }
+        pixelData.flip();
+
+        // Determine texture format
+        Texture.Type type = hasAlpha ? Texture.Type.RGBA_BYTE : Texture.Type.RGB_BYTE;
+
+        // Wrap and return
+        return new TextureDetailsSTB(pixelData, type, width, height);
+    }
+
+    private static int @NotNull [] getInts(JXLImage jxlImage, boolean hasAlpha) {
+        int alphaIndex        = jxlImage.getAlphaIndex(); // -1 if none
+
+        // Build the ordered channel list
+        // e.g., if CE_GRAY and alphaIndex=1 -> channels = [0, 1]
+        //       if CE_RGB and alphaIndex=3  -> channels = [0, 1, 2, 3]
+        //       if CE_RGB and no alpha      -> channels = [0, 1, 2]
+        //       etc.
+        int[] channelIndices;
+        if (jxlImage.getColorEncoding() == ColorFlags.CE_GRAY) {
+            channelIndices = hasAlpha ? new int[]{0, alphaIndex} : new int[]{0};
+        } else {
+            // CE_RGB
+            if (hasAlpha) {
+                channelIndices = new int[]{0, 1, 2, alphaIndex};
+            } else {
+                channelIndices = new int[]{0, 1, 2};
+            }
+        }
+        return channelIndices;
     }
 
     public enum Type {

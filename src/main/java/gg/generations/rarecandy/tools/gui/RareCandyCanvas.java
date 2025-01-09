@@ -1,5 +1,6 @@
 package gg.generations.rarecandy.tools.gui;
 
+import com.spinyowl.legui.system.context.CallbackKeeper;
 import gg.generations.rarecandy.pokeutils.PixelAsset;
 import gg.generations.rarecandy.pokeutils.reader.ITextureLoader;
 import gg.generations.rarecandy.renderer.LoggerUtil;
@@ -41,7 +42,7 @@ import java.util.function.Consumer;
 import static org.lwjgl.opengl.GL11.*;
 
 
-public class RareCandyCanvas extends AWTGLCanvas {
+public class RareCandyCanvas extends GLFWCanvas {
     private static CycleVariants runnable;
     public static Matrix4f projectionMatrix;
     public static float radius = 2.0f;
@@ -84,14 +85,8 @@ public class RareCandyCanvas extends AWTGLCanvas {
     }
 
     public RareCandyCanvas(PokeUtilsGui handler) {
-        super(defaultData());
+        super(1024, 1024, "Rare Candy");
         this.handler = handler;
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                projectionMatrix = new Matrix4f().perspective((float) Math.toRadians(90), (float) getWidth() / getHeight(), 0.1f, 1000.0f);
-            }
-        });
 
         NativeFileDialog.NFD_Init();
 //        root = DialogueUtils.chooseFolder();
@@ -112,7 +107,30 @@ public class RareCandyCanvas extends AWTGLCanvas {
         return time;
     }
 
-    public static void setup(RareCandyCanvas canvas) {
+//    public static void setup(RareCandyCanvas canvas) {
+//
+//        ITextureLoader.setInstance(new TextureLoader());
+//
+//        PipelineRegistry.setFunction(s-> switch(s) {
+//            case "masked" -> GuiPipelines.MASKED;
+//            case "layered" -> GuiPipelines.LAYERED;
+//            case "paradox" -> GuiPipelines.PARADOX;
+//            case "plane" -> GuiPipelines.PLANE;
+//            case "screen" -> GuiPipelines.SCREEN_QUAD;
+//            default -> GuiPipelines.SOLID;
+//        });
+//
+//
+//        var renderLoop = new Runnable() {
+//            @Override
+//            public void run() {
+//                if (canvas.isValid()) canvas.render();
+//                SwingUtilities.invokeLater(this);
+//            }
+//        };
+//
+//        SwingUtilities.invokeLater(renderLoop);
+//    }
 
         ITextureLoader.setInstance(new TextureLoader());
 
@@ -172,7 +190,6 @@ public class RareCandyCanvas extends AWTGLCanvas {
 
     @Override
     public void initGL() {
-        projectionMatrix = new Matrix4f().perspective((float) Math.toRadians(100), (float) getWidth() / getHeight(), 0.1f, 1000.0f);
         GL.createCapabilities(true);
         GuiPipelines.onInitialize();
         this.renderer = new RareCandy();
@@ -208,6 +225,16 @@ public class RareCandyCanvas extends AWTGLCanvas {
         return loader.generateCube(width, length, height, "smooth_stone", onFinish);
     }
 
+    @Override
+    protected CallbackKeeper getCallBackKeeper() {
+        return null;
+    }
+
+    @Override
+    protected void resize(int width, int height) {
+        super.resize(width, height);
+        projectionMatrix = new Matrix4f().perspective((float) Math.toRadians(100), (float) width / height, 0.1f, 1000.0f);
+    }
 
     private final Vector3f size = new Vector3f();
 
@@ -314,9 +341,9 @@ public class RareCandyCanvas extends AWTGLCanvas {
     }
 
     public void attachArcBall(GuiHandler.ArcballOrbit arcballOrbit) {
-        this.addMouseMotionListener(arcballOrbit);
-        this.addMouseWheelListener(arcballOrbit);
-        this.addMouseListener(arcballOrbit);
+//        this.addMouseMotionListener(arcballOrbit);
+//        this.addMouseWheelListener(arcballOrbit);
+//        this.addMouseListener(arcballOrbit);
     }
 
     public void toggleObject(boolean add, String object) {
