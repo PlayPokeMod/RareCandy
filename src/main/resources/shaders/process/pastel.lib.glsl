@@ -1,11 +1,3 @@
-#version 150 core
-#define ambientLight 0.6f
-in vec2 texCoord0;
-
-out vec4 outColor;
-
-uniform sampler2D diffuse;
-
 vec4 process(vec4 inColor) {
     vec2 wrappedUV = fract(texCoord0 * 5.0);
 
@@ -18,11 +10,5 @@ vec4 process(vec4 inColor) {
 
     vec3 pastelColor = mix(pastelBlue, pastelPink, gradient);
 
-    return vec4(mix(baseColor.rgb, pastelColor, 0.5), baseColor.a);
-}
-
-void main() {
-    vec4 baseColor = texture(diffuse, texCoord0);
-
-    outColor = process(baseColor);
+    return vec4(mix(inColor.rgb, pastelColor, 0.5), inColor.a);
 }

@@ -3,6 +3,7 @@ package gg.generations.rarecandy.tools.gui.imgui;
 import gg.generations.rarecandy.pokeutils.reader.ITextureLoader;
 import gg.generations.rarecandy.renderer.model.material.PipelineRegistry;
 import gg.generations.rarecandy.renderer.pipeline.Pipeline;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
 import java.io.IOException;
@@ -99,8 +100,9 @@ public class GuiPipelines {
 
 
     public static final Pipeline SOLID = new Pipeline.Builder(BASE)
-            .shader(builtin("animated.vs.glsl"), builtin("solid.fs.glsl"))
+            .shader(builtin("animated.vs.glsl"), builtin("base.fs.glsl", "solid"))
             .build();
+
     public static final Pipeline MASKED = new Pipeline.Builder(BASE)
             .shader(builtin("animated.vs.glsl"), builtin("masked.fs.glsl"))
             .supplyUniform("diffuse", ctx -> {
@@ -148,6 +150,35 @@ public class GuiPipelines {
             throw new RuntimeException("Failed to read built in shader", e);
         }
     }
+
+    private static String builtin(String name, String lib) {
+        // Base path to the shaders folder
+        String basePath = "/shaders/process/";
+
+        try (
+                var nameStream = Pipeline.class.getResourceAsStream(basePath + name);
+                var libStream = Pipeline.class.getResourceAsStream(basePath + lib)
+        ) {
+            if (nameStream == null) {
+                throw new IllegalArgumentException("Shader resource not found: " + name);
+            }
+            if (libStream == null) {
+                throw new IllegalArgumentException("Library resource not found: " + lib);
+            }
+
+            // Read the shader file content
+            String shaderContent = new String(nameStream.readAllBytes());
+
+            // Read the library file content
+            String libContent = new String(libStream.readAllBytes());
+
+            // Replace all instances of #color in the shader content with the library content
+            return shaderContent.replace("#color", libContent);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read built-in shader or library file: " + name + ", " + lib, e);
+        }
+    }
+
 
     public static void init() {
 

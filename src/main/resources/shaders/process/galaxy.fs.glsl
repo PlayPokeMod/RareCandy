@@ -6,10 +6,14 @@ out vec4 outColor;
 
 uniform sampler2D diffuse;
 
+vec4 process(vec4 inColor) {
+    float grayscale = 0.2126 * inColor.r + 0.7152 * inColor.g + 0.0722 * inColor.b;
+
+    return vec4(vec3(grayscale), inColor.a);
+}
+
 void main() {
     vec4 color = texture(diffuse, texCoord0);
 
-    float grayscale = 0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b;
-
-    outColor = vec4(vec3(grayscale), color.a);
+    outColor = process(color);
 }

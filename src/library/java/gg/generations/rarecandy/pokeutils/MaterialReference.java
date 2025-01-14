@@ -27,6 +27,7 @@ public class MaterialReference {
 
     public String parent;
     public String shader;
+    public String effect;
 
     public CullType cull;
 
@@ -98,6 +99,8 @@ public class MaterialReference {
 
             String shader = "solid";
 
+            String effect = null;
+
             CullType cull = CullType.None;
 
             BlendType blend = BlendType.None;
@@ -146,13 +149,14 @@ public class MaterialReference {
                 }
             } else {
                 shader = jsonObject.has("shader") ? jsonObject.getAsJsonPrimitive("shader").getAsString() : "solid";
+                effect = jsonObject.has("effect") ? jsonObject.getAsJsonPrimitive("effect").getAsString() : null;
                 cull = jsonObject.has("cull") ? CullType.from(jsonObject.getAsJsonPrimitive("cull").getAsString()) : CullType.None;
                 blend = jsonObject.has("blend") ? BlendType.from(jsonObject.getAsJsonPrimitive("blend").getAsString()) : BlendType.None;
                 images = jsonObject.has("images") ? images(jsonObject.getAsJsonObject("images")) : new HashMap<>();
                 values = jsonObject.has("values") ? values(jsonObject.getAsJsonObject("values")) : new HashMap<>();
             }
 
-            return new MaterialReference(parent, shader, cull, blend, images, values);
+            return new MaterialReference(parent, shader + (effect != null ? "_" + effect : ""), cull, blend, images, values);
 
 //            throw new JsonParseException("Material type %s invalid".formatted(type));
         }

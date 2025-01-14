@@ -10,6 +10,8 @@ uniform sampler2D diffuse;
 uniform sampler2D mask;
 uniform vec3 color;
 
+#process
+
 void main() {
     outColor = texture(diffuse, texCoord0);
     if (outColor.a < 0.01) discard;

@@ -5,10 +5,12 @@ out vec4 outColor;
 
 uniform sampler2D diffuse;
 
+#process
+
 vec4 getColor() {
     return texture(diffuse, texCoord0);
 }
 
 void main() {
-    outColor = getColor();
+    outColor = process(getColor());
 }

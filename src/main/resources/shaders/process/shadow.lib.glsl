@@ -1,13 +1,5 @@
-#version 150 core
-#define ambientLight 0.6f
 #define shadowBase vec3(0.04, 0.04, 0.1)
 #define shadowHighlight vec3(0.07, 0.07, 0.08)
-
-in vec2 texCoord0;
-
-out vec4 outColor;
-
-uniform sampler2D diffuse;
 
 vec4 process(vec4 inColor) {
     float luminance = dot(inColor.rgb, vec3(0.299, 0.587, 0.114));
@@ -22,10 +14,4 @@ vec4 process(vec4 inColor) {
     finalColor = clamp(finalColor, 0.0, 1.0);
 
     return vec4(finalColor, inColor.a);
-}
-
-void main() {
-    vec4 baseColor = texture(diffuse, texCoord0);
-
-    outColor = process(baseColor);
 }

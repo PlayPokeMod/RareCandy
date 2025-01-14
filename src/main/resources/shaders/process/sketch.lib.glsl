@@ -1,14 +1,4 @@
-#version 150 core
-#define ambientLight 0.6f
-in vec2 texCoord0;
-
-out vec4 outColor;
-
-uniform sampler2D diffuse;
-
-vec4 getColor() {
-    vec4 inColor = texture(diffuse, texCoord0);
-
+vec4 process(vec4 inColor) {
     float grayscale = 0.2126 * inColor.r + 0.7152 * inColor.g + 0.0722 * inColor.b;
 
     float luminanceDx = dFdx(grayscale);
@@ -21,8 +11,4 @@ vec4 getColor() {
     vec3 finalColor = mix(vec3(grayscale), edgeColor, outline);
 
     return vec4(finalColor, inColor.a);
-}
-
-void main() {
-    outColor = getColor();
 }

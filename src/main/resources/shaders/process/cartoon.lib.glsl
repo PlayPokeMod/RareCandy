@@ -1,11 +1,3 @@
-#version 150 core
-#define ambientLight 0.6f
-in vec2 texCoord0;
-
-out vec4 outColor;
-
-uniform sampler2D diffuse;
-
 const float edgeThreshold = 0.08;
 const float blockSize = 0.0015;
 const int bilateralIterations = 2;
@@ -34,15 +26,15 @@ vec3 bilateralFilter(vec2 uv) {
     float weightSum = 0.0;
 
     for (int i = -1; i <= 1; i++) {
-                                    for (int j = -1; j <= 1; j++) {
-                                        vec2 offsetUV = uv + vec2(float(i), float(j)) * 0.003;
-                                        vec3 sampleColor = texture(diffuse, offsetUV).rgb;
-                                        float spatialWeight = exp(-float(i * i + j * j) / (2.0 * 1.0));
-                                        float colorWeight = exp(-dot(sampleColor - texture(diffuse, uv).rgb, sampleColor - texture(diffuse, uv).rgb) / (2.0 * 0.05));
-                                        float weight = spatialWeight * colorWeight;
-                                        colorSum += sampleColor * weight;
-                                        weightSum += weight;
-                                    }
+        for (int j = -1; j <= 1; j++) {
+            vec2 offsetUV = uv + vec2(float(i), float(j)) * 0.003;
+            vec3 sampleColor = texture(diffuse, offsetUV).rgb;
+            float spatialWeight = exp(-float(i * i + j * j) / (2.0 * 1.0));
+            float colorWeight = exp(-dot(sampleColor - texture(diffuse, uv).rgb, sampleColor - texture(diffuse, uv).rgb) / (2.0 * 0.05));
+            float weight = spatialWeight * colorWeight;
+            colorSum += sampleColor * weight;
+            weightSum += weight;
+        }
     }
 
     return colorSum / weightSum;
@@ -57,8 +49,4 @@ vec4 process(vec4 inColor) {
     }
 
     return vec4(mix(color, inColor.rgb, edge), 1.0);
-}
-
-void main() {
-    outColor = process(texture(diffuse, texCoord0));
 }

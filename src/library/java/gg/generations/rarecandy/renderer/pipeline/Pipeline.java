@@ -71,8 +71,15 @@ public record Pipeline(Map<String, Consumer<UniformUploadContext>> uniformSuppli
             if (shader == 0) RareCandy.fatal("an error occurred creating the shader object. We don't know what it is.");
             GL20C.glShaderSource(shader, text);
             GL20C.glCompileShader(shader);
-            if (GL20C.glGetShaderi(shader, GL20C.GL_COMPILE_STATUS) == 0)
+            if (GL20C.glGetShaderi(shader, GL20C.GL_COMPILE_STATUS) == 0) {
+
+                System.out.println("Printing shader:");
+
+                System.out.println(text);
+
                 RareCandy.fatal(GL20C.glGetShaderInfoLog(shader, 1024));
+
+            }
             GL20C.glAttachShader(programId, shader);
         }
 

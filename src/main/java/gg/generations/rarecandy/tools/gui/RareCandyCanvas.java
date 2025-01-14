@@ -116,22 +116,6 @@ public class RareCandyCanvas extends AWTGLCanvas {
 
         ITextureLoader.setInstance(new TextureLoader());
 
-        PipelineRegistry.setFunction(s-> switch(s) {
-            case "masked" -> GuiPipelines.MASKED;
-            case "layered" -> GuiPipelines.LAYERED;
-            case "paradox" -> GuiPipelines.PARADOX;
-            case "galaxy" -> GuiPipelines.GALAXY;
-            case "cartoon" -> GuiPipelines.CARTOON;
-            case "pastel" -> GuiPipelines.PASTEL;
-            case "vintage" -> GuiPipelines.VINTAGE;
-            case "sketch" -> GuiPipelines.SKETCH;
-            case "shadow" -> GuiPipelines.SHADOW;
-            case "plane" -> GuiPipelines.PLANE;
-            case "screen" -> GuiPipelines.SCREEN_QUAD;
-            default -> GuiPipelines.SOLID;
-        });
-
-
         var renderLoop = new Runnable() {
             @Override
             public void run() {

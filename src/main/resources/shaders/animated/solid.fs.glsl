@@ -13,8 +13,10 @@ uniform float lightLevel;
 
 uniform bool useLight;
 
+#process
+
 void main() {
-    outColor = texture(diffuse, texCoord0);
+    outColor = process(texture(diffuse, texCoord0));
 
     if (outColor.a < 0.01) discard;
 
