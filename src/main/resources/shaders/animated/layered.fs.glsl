@@ -65,7 +65,7 @@ vec4 getColor() {
     base = mix(base, applyEmission(base, emiColor2, emiIntensity2), layerMasks.g);
     base = mix(base, applyEmission(base, emiColor3, emiIntensity3), layerMasks.b);
     base = mix(base, applyEmission(base, emiColor4, emiIntensity4), layerMasks.a);
-    base = mix(base, applyEmission(vec3(0), emiColor5, emiIntensity5), maskColor);
+    base = mix(base, applyEmission(vec3(1), emiColor5, emiIntensity5), maskColor);
 
     return vec4(base, color.a);
 }

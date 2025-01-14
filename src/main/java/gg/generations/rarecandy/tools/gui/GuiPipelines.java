@@ -132,7 +132,7 @@ public class GuiPipelines {
 
     public static Pipeline.Builder createLayered(String effect) {
         return new Pipeline.Builder(BASE)
-                .shader(builtin("animated/animated.vs.glsl"), builtin("process/layered.fs.glsl", "process/%s.lib.glsl".formatted(effect)))
+                .shader(builtin("animated/animated.vs.glsl"), builtin("animated/layered.fs.glsl", "process/%s.lib.glsl".formatted(effect)))
                 .configure(GuiPipelines::baseColors)
                 .configure(GuiPipelines::emissionColors)
                 .supplyUniform("layer", ctx -> {
@@ -154,7 +154,7 @@ public class GuiPipelines {
     }
 
     public static Pipeline.Builder createSolid(String effect) {
-        return new Pipeline.Builder(BASE).shader(builtin("animated/animated.vs.glsl"), builtin("process/base.fs.glsl", "process/%s.lib.glsl".formatted(effect)));
+        return new Pipeline.Builder(BASE).shader(builtin("animated/animated.vs.glsl"), builtin("animated/solid.fs.glsl", "process/%s.lib.glsl".formatted(effect)));
     }
 
     public static Pipeline.Builder createMasked(String effect) {
@@ -264,7 +264,6 @@ public class GuiPipelines {
         var effects = List.of("cartoon", "galaxy", "paradox", "shadow", "sketch", "vintage", "passthrough");
 
         for (var effect : effects) {
-            System.out.println(effect);
             var solid = createSolid(effect);
             var masked = createMasked(effect);
             var layered = createLayered(effect);
